@@ -8,17 +8,16 @@ namespace RandomName
         public static class RandomName
     {
         //xor encryption and decryption function
-        public static byte[] xor(byte[] plainTextBytes, string passPhrase)
+    private static byte[] xorEncDec(byte[] inputData, string keyPhrase)
+    {
+        //byte[] keyBytes = Encoding.UTF8.GetBytes(keyPhrase);
+        byte[] bufferBytes = new byte[inputData.Length];
+        for (int i = 0; i < inputData.Length; i++)
         {
-            byte[] initVectorBytes = Encoding.UTF8.GetBytes("pemgail9uzpgzl88");
-            PasswordDeriveBytes password = new PasswordDeriveBytes(passPhrase, null);
-            byte[] keyBytes = password.GetBytes(256 / 8);
-            for (int i = 0; i < plainTextBytes.Length; i++)
-            {
-                plainTextBytes[i] = (byte)(plainTextBytes[i] ^ keyBytes[i % keyBytes.Length]);
-            }
-            return plainTextBytes;
+            bufferBytes[i] = (byte)(inputData[i] ^ Encoding.UTF8.GetBytes(keyPhrase)[i % Encoding.UTF8.GetBytes(keyPhrase).Length]);
         }
+        return bufferBytes;
+    }
         //read binary file and return byte array
         public static byte[] ReadLocalFilePath(string filePath)
         {
@@ -65,7 +64,7 @@ namespace RandomName
                 return;
             }
             byte[] buffer = ReadLocalFilePath(input);
-            byte[] result = xor(buffer, key);
+            byte[] result = xorEncDec(buffer, key);
             WriteLocalFilePath(output, result);
         }
     }
